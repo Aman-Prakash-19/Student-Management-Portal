@@ -1,6 +1,6 @@
 # Student-Management-Portal
 
-## Project Overvieww
+## Project Overview
 
 A CLI-based system designed to streamline student and trainer management for mthree. The portal facilitates onboarding, course assignments, attendance tracking, and trainer management.
 
@@ -19,14 +19,14 @@ A CLI-based system designed to streamline student and trainer management for mth
     - Name
     - gitHub ID
     - Resume (PDF,word)
-    - College Docs
+    - College Documents
   - Course selection:
     - Display available seats
     - Allow selection based on availability
     - Auto-assign if availability is low
 - Trainer Onboarding
   - Create Accounts
-  - Gnerate Mthree email ids
+  - Generate Mthree email ids
   - Add details
     - Emails
     - Name
