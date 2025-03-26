@@ -1,5 +1,9 @@
 # Student-Management-Portal
 
+## Project Overvieww
+
+A CLI-based system designed to streamline student and trainer management for mthree. The portal facilitates onboarding, course assignments, attendance tracking, and trainer management.
+
 
 ## User Roles:
 - Admin has access to change and view everything.
