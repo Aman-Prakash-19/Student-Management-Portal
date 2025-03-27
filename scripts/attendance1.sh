@@ -2,10 +2,10 @@
 
 #touch the files before if not initiated here
 
-attendance_db="attendance_db.csv"
-students_db="students_db.csv"
-notifications_db="notifications.csv"
-batch_report="batch_report.csv"
+attendance_db="../data/attendance_db.csv"
+students_db="../data/students.csv"
+notifications_db="../data/notifications.csv"
+batch_report="../data/batch_report.csv"
 
 
 mark_attendance() {
