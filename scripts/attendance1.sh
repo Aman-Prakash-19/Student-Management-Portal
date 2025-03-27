@@ -2,10 +2,10 @@
 
 #touch the files before if not initiated here
 
-attendance_db="../data/attendance_db.csv"
-students_db="../data/students.csv"
-notifications_db="../data/notifications.csv"
-batch_report="../data/batch_report.csv"
+attendance_db="//home/ec2-user/Student-Management-Portal/data/attendance_db.csv"
+students_db="//home/ec2-user/Student-Management-Portal/data/students.csv"
+notifications_db="//home/ec2-user/Student-Management-Portal/data/notifications.csv"
+batch_report="//home/ec2-user/Student-Management-Portal/data/batch_report.csv"
 
 
 mark_attendance() {

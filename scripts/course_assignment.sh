@@ -2,10 +2,10 @@
 
 # Course Assignment Script with Role-Based Access
 
-students_file="../data/students.csv"
-courses_file="../data/courses.csv"
-trainers_file="../data/trainers.csv"
-users_file="../data/users.csv"
+students_file="//home/ec2-user/Student-Management-Portal/data/students.csv"
+courses_file="//home/ec2-user/Student-Management-Portal/data/courses.csv"
+trainers_file="//home/ec2-user/Student-Management-Portal/data/trainers.csv"
+users_file="//home/ec2-user/Student-Management-Portal/data/users.csv"
 
 # Colours
 RED='\e[31m'

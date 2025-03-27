@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # File paths
-STUDENT_FILE="../data/students.csv"
-TRAINER_FILE="../data/trainers.csv"
-USERS_FILE="../data/users.csv"
+STUDENT_FILE="//home/ec2-user/Student-Management-Portal/data/students.csv"
+TRAINER_FILE="//home/ec2-user/Student-Management-Portal/data/trainers.csv"
+USERS_FILE="//home/ec2-user/Student-Management-Portal/data/users.csv"
 
 # Google Form Link
 GOOGLE_FORM_LINK="https://forms.gle/d19Y8Dvw9fXwbTAb8"
