@@ -96,16 +96,16 @@ assign_student()
 	display_courses
 	read -p "Choose a course (Enter Number): " course_choice
 
-	course_name=$(awk -F',' -v num=$course_choice 'NR==num {print $1}' $courses_file)
-	seats=$(awk -F',' -v num=$course_choice 'NR==num {print $2}' $courses_file)
+	course_name=$(awk -F',' -v num=$course_choice 'NR==num {print $1}' $courses_file) # Extract course name corresponding to course_choice
+	seats=$(awk -F',' -v num=$course_choice 'NR==num {print $2}' $courses_file) # Number of seats
 
 	if [[ "$seats" -gt 0 ]]; then
-		sed -i "/$student_email/c\\$(grep "^.*,$student_email,.*" $students_file | awk -F',' -v c="$course_name" 'BEGIN{OFS=","} {$4=c; print}')" $students_file
-		awk -F',' -v num=$course_choice 'NR==num {$2=$2-1}1' OFS=',' $courses_file > temp && mv temp $courses_file
+		sed -i "/$student_email/c\\$(grep "^.*,$student_email,.*" $students_file | awk -F',' -v c="$course_name" 'BEGIN{OFS=","} {$4=c; print}')" $students_file # Updaate the course name in students.csv
+		awk -F',' -v num=$course_choice 'NR==num {$2=$2-1}1' OFS=',' $courses_file > temp && mv temp $courses_file # Decrement number of seats in courses.csv
 		echo -e "${GREEN}Student assigned to $course_name successfully!${RESET}"
 	else
 		echo -e "${YELLOW}No seats available for $course_name. Assigning automatically...${RESET}"
-		auto_assign_student $student_email
+		auto_assign_student $student_email # Run auto-assign if no seats avalaible
 	fi
 }
 
@@ -113,18 +113,18 @@ assign_student()
 auto_assign_student()
 {
 	local student_email=$1
-    	local pref_course=$(awk -F',' -v email="$student_email" '$2==email {print $4}' $students_file)
+    	local pref_course=$(awk -F',' -v email="$student_email" '$2==email {print $4}' $students_file) # Extracting preferred course (Column 4)
     	local best_course=""
     
-	if [[ -n "$pref_course" && $(awk -F',' -v course="$pref_course" '$1==course && $2>0' $courses_file) ]]; then
+	if [[ -n "$pref_course" && $(awk -F',' -v course="$pref_course" '$1==course && $2>0' $courses_file) ]]; then # Checking if student has preferred and if seats are available
         	best_course=$pref_course
     	else
-        	best_course=$(awk -F',' '$2 > 0 {print $1; exit}' $courses_file)
+        	best_course=$(awk -F',' '$2 > 0 {print $1; exit}' $courses_file) # Else find the first course in the courses.csv with seats > 0
     	fi
     
     	if [[ -n "$best_course" ]]; then
-        	awk -F',' -v email="$student_email" -v course="$best_course" 'BEGIN{OFS=","} {if ($2==email) $4=course}1' $students_file > temp && mv temp $students_file
-        	awk -F',' -v course="$best_course" 'BEGIN{OFS=","} {if ($1==course) $2=$2-1}1' $courses_file > temp && mv temp $courses_file
+        	awk -F',' -v email="$student_email" -v course="$best_course" 'BEGIN{OFS=","} {if ($2==email) $4=course}1' $students_file > temp && mv temp $students_file # Updating the Course to new Course
+        	awk -F',' -v course="$best_course" 'BEGIN{OFS=","} {if ($1==course) $2=$2-1}1' $courses_file > temp && mv temp $courses_file # Decrementing the number of seats in the course
         	echo -e "${GREEN}Student auto-assigned to $best_course${RESET}"
     	else
         	echo -e "${RED}No available courses at the moment. Try again later.${RESET}"
@@ -137,17 +137,16 @@ assign_trainers()
 	echo -e "${CYAN}Assigning trainers to courses...${RESET}"
     	declare -A assigned_courses
 
-    	while IFS=',' read -r course_name _; do
-        	if [[ -z "${assigned_courses[$course_name]}" ]]; then
-            		trainer_line=$(shuf -n 1 "$trainers_file")
-            		trainer_email=$(echo "$trainer_line" | cut -d',' -f2)  # Using correct column (2nd) for email
+    	while IFS=',' read -r course_name _; do # Reading each line of courses.csv and storing in course_name
+        	if [[ -z "${assigned_courses[$course_name]}" ]]; then # Checking if course is already assigned
+            		trainer_line=$(shuf -n 1 "$trainers_file") # Randomly pick a trainer
+            		trainer_email=$(echo "$trainer_line" | cut -d',' -f2) 
 
-            		if [[ -n "$trainer_email" ]]; then
-                		assigned_courses[$course_name]=$trainer_email
+            		if [[ -n "$trainer_email" ]]; then # If trainer is available
+                		assigned_courses[$course_name]=$trainer_email # Store assigned trainer in the array
                 
                 		# Update the trainer's course in trainers.csv
-                		awk -F',' -v email="$trainer_email" -v course="$course_name" 'BEGIN{OFS=","} 
-                		{ if ($2 == email) $5 = course }1' "$trainers_file" > temp && mv temp "$trainers_file"
+                		awk -F',' -v email="$trainer_email" -v course="$course_name" 'BEGIN{OFS=","} { if ($2 == email) $5 = course }1' "$trainers_file" > temp && mv temp "$trainers_file"
             		fi
         	fi
     	done < "$courses_file"
