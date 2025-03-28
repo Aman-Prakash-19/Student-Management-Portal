@@ -134,21 +134,24 @@ auto_assign_student()
 # Assign trainers to courses
 assign_trainers()
 {
-    	echo -e "${CYAN}Assigning trainers to courses...${RESET}"
+	echo -e "${CYAN}Assigning trainers to courses...${RESET}"
     	declare -A assigned_courses
+
     	while IFS=',' read -r course_name _; do
         	if [[ -z "${assigned_courses[$course_name]}" ]]; then
-            		trainer_line=$(shuf -n 1 $trainers_file)
-            		trainer_email=$(echo "$trainer_line" | cut -d',' -f2)
+            		trainer_line=$(shuf -n 1 "$trainers_file")
+            		trainer_email=$(echo "$trainer_line" | cut -d',' -f2)  # Using correct column (2nd) for email
 
             		if [[ -n "$trainer_email" ]]; then
                 		assigned_courses[$course_name]=$trainer_email
                 
+                		# Update the trainer's course in trainers.csv
                 		awk -F',' -v email="$trainer_email" -v course="$course_name" 'BEGIN{OFS=","} 
-                		{ if ($2 == email) $5 = course }1' $trainers_file > temp && mv temp $trainers_file
+                		{ if ($2 == email) $5 = course }1' "$trainers_file" > temp && mv temp "$trainers_file"
             		fi
         	fi
-    	done < $courses_file
+    	done < "$courses_file"
+
     	echo -e "${GREEN}Trainers assigned successfully.${RESET}"
 }
 
