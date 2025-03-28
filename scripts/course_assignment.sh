@@ -58,6 +58,28 @@ update_course_seats()
 	echo -e "${GREEN}Course seat availability updated!${RESET}"
 }
 
+# Function to upddate/add course preference for a student
+update_course_preference() {
+    student_email=$1
+
+    echo -e "\nAvailable Courses:"
+    awk -F',' '{print NR, "-", $1}' "$courses_file"
+
+    read -p "Enter the number corresponding to your preferred course: " choice
+
+    # Get course name from choice
+    preferred_course=$(awk -F',' -v num="$choice" 'NR == num {print $1}' "$courses_file")
+
+    if [[ -n "$preferred_course" ]]; then
+        # Update student CSV with preference
+        awk -F',' -v email="$student_email" -v course="$preferred_course" 'BEGIN{OFS=","} 
+            $2 == email {$5 = course}1' "$students_file" > temp && mv temp "$students_file"
+
+        echo -e "${GREEN}Your course preference has been updated to $preferred_course!${RESET}"
+    else
+        echo -e "${RED}Invalid choice. Please try again.${RESET}"
+    fi
+}
 
 # Function to display all students and their details
 view_all_students()
@@ -103,15 +125,26 @@ assign_student()
 
 # Function to auto-assign students if seats are full
 auto_assign_student() {
-	student_email=$1
-	best_course=$(awk -F',' '$2 > 0 {print $1; exit}' $courses_file)
-	if [[ -n "$best_course" ]]; then
-		sed -i "/$student_email/c\\$(grep "^.*,$student_email,.*" $students_file | awk -F',' -v c="$best_course" 'BEGIN{OFS=","} {$4=c; print}')" $students_file
- 		awk -F',' -v course="$best_course" 'BEGIN{OFS=","} {if ($1==course) $2=$2-1}1' $courses_file > temp && mv temp $courses_file
-		echo -e "${GREEN}Student auto-assigned to $best_course${RESET}"
-	else
-		echo -e "${RED}No available courses at the moment. Try again later.${RESET}"
-	fi
+    student_email=$1
+    preferred_course=$(awk -F',' -v email="$student_email" '$2 == email {print $5}' "$students_file")
+
+    if [[ -n "$preferred_course" ]]; then
+        seats_available=$(awk -F',' -v c="$preferred_course" '$1 == c {print $2}' "$courses_file")
+
+        if [[ "$seats_available" -gt 0 ]]; then
+            # Assign student to their preferred course
+            sed -i "/$student_email/c\\$(grep "^.*,$student_email,.*" $students_file | awk -F',' -v c="$preferred_course" 'BEGIN{OFS=","} {$4=c; print}')" $students_file
+
+            # Update course seats
+            awk -F',' -v c="$preferred_course" 'BEGIN{OFS=","} {if ($1==c) $2=$2-1}1' "$courses_file" > temp && mv temp "$courses_file"
+
+            echo -e "${GREEN}Student auto-assigned to $preferred_course!${RESET}"
+        else
+            echo -e "${RED}Preferred course is full. Manual intervention needed.${RESET}"
+        fi
+    else
+        echo -e "${RED}No preference set. Assign manually.${RESET}"
+    fi
 }
 
 # Assign trainers to courses
@@ -180,12 +213,14 @@ do
             		echo -e "${YELLOW}-------Student Menu-------${RESET}"
 			echo -e "${YELLOW}--------------------------${RESET}"
             		echo -e "${CYAN}1.${RESET} View Assigned Course"
-            		echo -e "${CYAN}2.${RESET} Logout"
-            		echo -e "${CYAN}3.${RESET} Back to Main Menu"
+	      		echo -e "${CYAN}2.${RESET} Add/Update Your Course Preference"
+            		echo -e "${CYAN}3.${RESET} Logout"
+            		echo -e "${CYAN}4.${RESET} Back to Main Menu"
             		read -p "Choose an option: " choice
             		case $choice in
                 		1) grep "$user_email" $students_file | awk -F',' '{print "Assigned Course: "$4}';;
-                		2) break;;
+                		2) update_course_preference
+		  		2) break;;
                 		3) break 2;;
                 		*) echo -e "${RED}Invalid option.${RESET}";;
             		esac
@@ -195,4 +230,3 @@ do
         	fi
     	done
 done
-
