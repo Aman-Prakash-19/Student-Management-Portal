@@ -7,6 +7,7 @@ A CLI-based system designed to streamline student and trainer management for mth
 
 ## How to run
 Run the following command inside the project folder
+
 ``
 ./main.sh
 ``
