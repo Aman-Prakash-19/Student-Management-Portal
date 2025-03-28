@@ -5,6 +5,12 @@
 A CLI-based system designed to streamline student and trainer management for mthree. The portal facilitates onboarding, course assignments, attendance tracking, and trainer management.
 
 
+## How to run
+``
+./main.sh
+``
+
+
 ## User Roles:
 - Admin has access to change and view everything.
 - Trainer can manage course details, view student details, manage deadlines
