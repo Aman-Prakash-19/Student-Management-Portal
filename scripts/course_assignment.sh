@@ -153,7 +153,6 @@ do
 	while true;
 	do
 		if [[ "$user_role" == "admin" ]]; then
-  			clear
      			echo -e "${YELLOW}----------------------------------------${RESET}"
 			echo -e "${YELLOW}---------------Admin Menu---------------${RESET}"
 			echo -e "${YELLOW}----------------------------------------${RESET}"
@@ -182,7 +181,6 @@ do
 				*) echo -e "${RED}Invalid option.${RESET}";;
 			esac
 		elif [[ "$user_role" == "trainer" ]]; then
-  			clear
      			echo -e "${YELLOW}----------------------------------------${RESET}"
 			echo -e "${YELLOW}--------------Trainer Menu--------------${RESET}"
 			echo -e "${YELLOW}----------------------------------------${RESET}"
@@ -199,7 +197,6 @@ do
                 		*) echo -e "${RED}Invalid option.${RESET}";;
             		esac
         	elif [[ "$user_role" == "student" ]]; then
-	 		clear
     			echo -e "${YELLOW}----------------------------------------${RESET}"
             		echo -e "${YELLOW}--------------Student Menu--------------${RESET}"
 			echo -e "${YELLOW}----------------------------------------${RESET}"
