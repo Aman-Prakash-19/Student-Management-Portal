@@ -132,13 +132,21 @@ auto_assign_student()
 }
 
 # Assign trainers to courses
-assign_trainers() {
-	echo -e "${CYAN}Assigning trainers to courses...${RESET}"
-	while IFS=',' read -r course_name _; do
-		trainer_email=$(shuf -n 1 $trainers_file | cut -d',' -f2)
-        	sed -i "/$trainer_email/c\\$(grep "^.*,$trainer_email,.*" $trainers_file | awk -F',' -v c="$course_name" 'BEGIN{OFS=","} {$5=c; print}')" $trainers_file
-	done < $courses_file
-	echo -e "${GREEN}Trainers assigned successfully.${RESET}"
+assign_trainers()
+{
+    	echo -e "${CYAN}Assigning trainers to courses...${RESET}"
+    	declare -A assigned_courses
+    	while IFS=',' read -r course_name _; do
+        	if [[ -z "${assigned_courses[$course_name]}" ]]; then
+            		trainer_line=$(shuf -n 1 $trainers_file | grep -v ",${assigned_courses[@]}")
+            		if [[ -n "$trainer_line" ]]; then
+                		trainer_email=$(echo "$trainer_line" | cut -d',' -f2)
+                		assigned_courses[$course_name]=$trainer_email
+                		sed -i "s/^.*,$trainer_email,.*/&,$course_name/" $trainers_file
+            		fi
+        	fi
+    	done < $courses_file
+    	echo -e "${GREEN}Trainers assigned successfully.${RESET}"
 }
 
 # Infinite loop for login and menu selection
