@@ -138,11 +138,14 @@ assign_trainers()
     	declare -A assigned_courses
     	while IFS=',' read -r course_name _; do
         	if [[ -z "${assigned_courses[$course_name]}" ]]; then
-            		trainer_line=$(shuf -n 1 $trainers_file | grep -v ",${assigned_courses[@]}")
-            		if [[ -n "$trainer_line" ]]; then
-                		trainer_email=$(echo "$trainer_line" | cut -d',' -f2)
+            		trainer_line=$(shuf -n 1 $trainers_file)
+            		trainer_email=$(echo "$trainer_line" | cut -d',' -f2)
+
+            		if [[ -n "$trainer_email" ]]; then
                 		assigned_courses[$course_name]=$trainer_email
-                		sed -i "s/^.*,$trainer_email,.*/&,$course_name/" $trainers_file
+                
+                		awk -F',' -v email="$trainer_email" -v course="$course_name" 'BEGIN{OFS=","} 
+                		{ if ($2 == email) $5 = course }1' $trainers_file > temp && mv temp $trainers_file
             		fi
         	fi
     	done < $courses_file
