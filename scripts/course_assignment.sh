@@ -145,6 +145,7 @@ assign_trainers() {
 while true; 
 do
 	# Get User Email to distinguish roles
+ 	clear
 	echo -e "${CYAN}Enter your email: ${RESET}"
 	read user_email
 	user_role=$(get_user_role "$user_email")
@@ -152,8 +153,10 @@ do
 	while true;
 	do
 		if [[ "$user_role" == "admin" ]]; then
-			echo -e "${YELLOW}--------Admin Menu--------${RESET}"
-			echo -e "${YELLOW}--------------------------${RESET}"
+  			clear
+     			echo -e "${YELLOW}----------------------------------------${RESET}"
+			echo -e "${YELLOW}---------------Admin Menu---------------${RESET}"
+			echo -e "${YELLOW}----------------------------------------${RESET}"
 			echo -e "${CYAN}1.${RESET} Assign Student to Course"
 			echo -e "${CYAN}2.${RESET} Auto-Assign Student"
 			echo -e "${CYAN}3.${RESET} Assign Trainers to Courses"
@@ -179,8 +182,10 @@ do
 				*) echo -e "${RED}Invalid option.${RESET}";;
 			esac
 		elif [[ "$user_role" == "trainer" ]]; then
-			echo -e "${YELLOW}-------Trainer Menu-------${RESET}"
-			echo -e "${YELLOW}--------------------------${RESET}"
+  			clear
+     			echo -e "${YELLOW}----------------------------------------${RESET}"
+			echo -e "${YELLOW}--------------Trainer Menu--------------${RESET}"
+			echo -e "${YELLOW}----------------------------------------${RESET}"
 			echo -e "${CYAN}1.${RESET} View Assigned Courses"
 			echo -e "${CYAN}2.${RESET} View Assigned Students"
 			echo -e "${CYAN}3.${RESET} Logout"
@@ -194,8 +199,10 @@ do
                 		*) echo -e "${RED}Invalid option.${RESET}";;
             		esac
         	elif [[ "$user_role" == "student" ]]; then
-            		echo -e "${YELLOW}-------Student Menu-------${RESET}"
-			echo -e "${YELLOW}--------------------------${RESET}"
+	 		clear
+    			echo -e "${YELLOW}----------------------------------------${RESET}"
+            		echo -e "${YELLOW}--------------Student Menu--------------${RESET}"
+			echo -e "${YELLOW}----------------------------------------${RESET}"
             		echo -e "${CYAN}1.${RESET} View Assigned Course"
 	      		echo -e "${CYAN}2.${RESET} Add/Update Your Course Preference"
             		echo -e "${CYAN}3.${RESET} Logout"
