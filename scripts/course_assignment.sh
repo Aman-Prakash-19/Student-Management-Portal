@@ -61,25 +61,10 @@ update_course_seats()
 # Function to upddate/add course preference for a student
 update_course_preference()
 {
-    	student_email=$1
-
-    	echo -e "\nAvailable Courses:"
-    	awk -F',' '{print NR, "-", $1}' "$courses_file"
-
-    	read -p "Enter the number corresponding to your preferred course: " choice
-
-    	# Get the course name based on choice
-    	preferred_course=$(awk -F',' -v num="$choice" 'NR == num {print $1}' "$courses_file")
-
-    	if [[ -n "$preferred_course" ]]; then
-        	# Update student record with preference, even if course column isn't present yet
-        	awk -F',' -v email="$student_email" -v course="$preferred_course" 'BEGIN{OFS=","} 
-            		{ if ($2 == email) {if (NF == 3) $4=""; $5 = course} print }' "$students_file" > temp && mv temp "$students_file"
-
-        	echo -e "${GREEN}Your preference has been set to $preferred_course!${RESET}"
-    	else
-        	echo -e "${RED}Invalid choice. Try again.${RESET}"
-    	fi
+    	local student_email=$1
+    	read -p "Enter preferred course: " course_pref
+    	awk -F',' -v email="$student_email" -v pref="$course_pref" 'BEGIN{OFS=","} {if ($2==email) $4=pref}1' $students_file > temp && mv temp $students_file
+    	echo -e "${GREEN}Course preference updated successfully!${RESET}"
 }
 
 # Function to display all students and their details
@@ -127,27 +112,19 @@ assign_student()
 # Function to auto-assign students if seats are full
 auto_assign_student()
 {
-    	student_email=$1
-    	student_preference=$(awk -F',' -v email="$student_email" '$2 == email {print $5}' "$students_file")
+	local student_email=$1
+    	local pref_course=$(awk -F',' -v email="$student_email" '$2==email {print $4}' $students_file)
+    	local best_course=""
     
-    	# Find available course based on preference first
-    	if [[ -n "$student_preference" ]]; then
-        	best_course=$(awk -F',' -v course="$student_preference" '$1 == course && $2 > 0 {print $1; exit}' "$courses_file")
+	if [[ -n "$pref_course" && $(awk -F',' -v course="$pref_course" '$1==course && $2>0' $courses_file) ]]; then
+        	best_course=$pref_course
+    	else
+        	best_course=$(awk -F',' '$2 > 0 {print $1; exit}' $courses_file)
     	fi
-
-    	# If preference is unavailable, assign any available course
-    	if [[ -z "$best_course" ]]; then
-        	best_course=$(awk -F',' '$2 > 0 {print $1; exit}' "$courses_file")
-    	fi
-
+    
     	if [[ -n "$best_course" ]]; then
-        	# Update student record with assigned course
-        	awk -F',' -v email="$student_email" -v course="$best_course" 'BEGIN{OFS=","} 
-            		{ if ($2 == email) $4 = course; print }' "$students_file" > temp && mv temp "$students_file"
-
-        	# Reduce seat count in courses.csv
-        	awk -F',' -v course="$best_course" 'BEGIN{OFS=","} {if ($1 == course) $2=$2-1}1' "$courses_file" > temp && mv temp "$courses_file"
-
+        	awk -F',' -v email="$student_email" -v course="$best_course" 'BEGIN{OFS=","} {if ($2==email) $4=course}1' $students_file > temp && mv temp $students_file
+        	awk -F',' -v course="$best_course" 'BEGIN{OFS=","} {if ($1==course) $2=$2-1}1' $courses_file > temp && mv temp $courses_file
         	echo -e "${GREEN}Student auto-assigned to $best_course${RESET}"
     	else
         	echo -e "${RED}No available courses at the moment. Try again later.${RESET}"
