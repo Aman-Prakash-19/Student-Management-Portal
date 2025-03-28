@@ -220,8 +220,8 @@ do
             		case $choice in
                 		1) grep "$user_email" $students_file | awk -F',' '{print "Assigned Course: "$4}';;
                 		2) update_course_preference;;
-		  		2) break;;
-                		3) break 2;;
+		  		3) break;;
+                		4) break 2;;
                 		*) echo -e "${RED}Invalid option.${RESET}";;
             		esac
         	else
